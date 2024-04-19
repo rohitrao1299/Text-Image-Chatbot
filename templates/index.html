@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+</head>
+<body>
+    <h1>Ask me anything!</h1>
+    <form action="/chat" method="post">
+        <input type="text" name="input_text" placeholder="Enter your question here..." required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="chat-history">
+        <!-- Chat history will be displayed here -->
+    </div>
+    <script>
+        const chatHistory = document.getElementById('chat-history');
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputText = document.querySelector('input[name="input_text"]');
+            const question = inputText.value;
+            inputText.value = '';
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `input_text=${encodeURIComponent(question)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseText = data.response;
+                const chatElement = document.createElement('div');
+                chatElement.innerHTML = `<strong>You:</strong> ${question}<br><strong>Assistant:</strong> ${responseText}`;
+                chatHistory.appendChild(chatElement);
+            });
+        });
+    </script>
+</body>
+</html>
